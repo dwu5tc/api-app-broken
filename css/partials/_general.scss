@@ -1,0 +1,28 @@
+* {
+	margin: 0;
+}
+
+body {
+	background-color: #222;
+}
+
+ul {
+	list-style-type: none;
+	list-style: none;
+	padding: 0;
+}
+
+li {
+}
+
+.wrapper {
+	width: 100%;
+	// display: flex;
+	// justify-content: space-between;
+	background-color: goldenrod;
+}
+
+.map-view,
+.ig-feed {
+	width: 50%;
+}
