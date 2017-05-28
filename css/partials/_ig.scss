@@ -1,8 +1,6 @@
 .options-bar {
 	width: 100%;
 	height: 45px;
-	display: flex;
-	justify-content: space-between;
 	background-color: #EEEEEE;
 	// > * {
 	// 	height: 45px;
@@ -12,12 +10,10 @@
 		border: none;
 		// border: 1px solid black;
 	}
-	.content-refresh {
-		width: 45px;
-	}
 }
 
 .hashtag-search {
+	float: left;
 	> * {
 		height: 45px;
 	}
@@ -29,6 +25,24 @@
 		border: none;
 		width: 45px;
 	}
+}
+
+.hashtag-search__curr {
+	margin-left: 10px;
+	display: flex;
+	align-items: center;
+	float: left;
+	height: 45px;
+	background-color: transparent;
+	button {
+		color: red;
+		margin-right: 5px;
+	}
+}
+
+.filters-toggle {
+	float: right;
+	height: 45px;
 }
 
 .ig-feed {

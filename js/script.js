@@ -1,13 +1,10 @@
-// https://developers.google.com/places/web-service/get-api-key
-// limit IP addresses
-// 
+// >750 range through multiple ajax calls then checking returned location
+	// if within boundaries
 
 var myApp = {
 	ig: {},
 	google: {}
 }
-
-var lol;
 
 myApp.google.API_KEY = "AIzaSyDnP_DNUIMP3V6yZlGWdLepItdtcmsnJEo";
 myApp.ig.CLIENT_ID = " 9eabcfa6570c43c8bcbf0cba7afc004e";
@@ -22,23 +19,14 @@ myApp.google.currLocation = {
 	lng: null
 }
 myApp.ig.currLocationsList = [];
+myApp.ig.hashtag = null;
+myApp.ig.currHashtagFilter;
 
 myApp.init = function() {
-	myApp.test();
 	myApp.google.init();
 	myApp.ig.init();
+	myApp.test();
 }
- 
-// myApp.getIG = function(name, callback) {
-// 	var endpoint = myApp.IG_BASE_URL + "/tags/" + name + "/media/recent?access_token=" + myApp_IG_CLIENT_ID;
-// 	var getPosts = $.ajax({
-// 		url: endpoint,
-// 		dataType: "jsonp",
-// 		type: "GET",
-// 	});
-// }
-
-// https://www.instagram.com/oauth/authorize/?client_id=aeb44d4afdda4729b71cc508597b1ff2&redirect_uri=http://localhost&response_type=token&scope=basic+public_content+follower_list+comments+relationships+likes
 
 myApp.test = function() {
 	var tagName = "canada";
@@ -85,8 +73,6 @@ myApp.test = function() {
 
 myApp.ig.searchByTagsRecent = function(...params) {
 	var endpoint = "https://api.instagram.com/v1/tags/" + params[0] + "/media/recent";
-	// console.log(endpoint);
-	// console.log(params);
 	if (params.length < 2) 
 	{
 		return $.ajax({
@@ -125,21 +111,6 @@ myApp.ig.searchByTagsRecent = function(...params) {
 			}
 		});
 	}
-}
-
-
-
-myApp.search 
-
-myApp.getPhoto = function(object) { 
-
-}
-
-
-
-// https://api.instagram.com/v1/media/search?lat=48.858844&lng=2.294351&access_token=ACCESS-TOKEN
-myApp.mediaSearchByCoordinates = function(lat, lng, dst) {
-
 }
 
 // https://api.instagram.com/v1/media/shortcode/D?access_token=ACCESS-TOKEN
@@ -173,8 +144,6 @@ myApp.ig.updateLocationsList = function(obj) {
 
 myApp.ig.getMediaByLocationIDs = function(...params) {
 	var endpoint = `https://api.instagram.com/v1/locations/${params[0]}/media/recent`
-	// console.log(this.name, "endpoint", endpoint);
-	// console.log(this.name, "params", params);
 	if (params.length < 2) 
 	{
 		return $.ajax({
@@ -213,13 +182,9 @@ myApp.ig.getMediaByLocationIDs = function(...params) {
 		});
 	}
 }
-
-
 
 myApp.ig.getMediaByLocationID = function(...params) {
 	var endpoint = `https://api.instagram.com/v1/locations/${params[0]}/media/recent`
-	// console.log(this.name, "endpoint", endpoint);
-	// console.log(this.name, "params", params);
 	if (params.length < 2) 
 	{
 		return $.ajax({
@@ -259,18 +224,23 @@ myApp.ig.getMediaByLocationID = function(...params) {
 	}
 }
 
-myApp.ig.init = function() {
+myApp.ig.init = function() 
+{
 	myApp.ig.addFilterListener();
+	myApp.ig.addHashtagListener();
 }
 
-myApp.google.init = function() {
+myApp.google.init = function() 
+{
 	var mapTarget = $(".map-container");
 	var searchBoxTarget = $(".map-view__search-box");
 	var map = myApp.google.map;
 	var searchBox = myApp.google.searchBox;
 
-	map = new google.maps.Map(mapTarget[0], {
-		center: {
+	map = new google.maps.Map(mapTarget[0], 
+	{
+		center: 
+		{
 			lat: 43.648373, 
 			lng: -79.397918
 		},
@@ -282,18 +252,16 @@ myApp.google.init = function() {
 	searchBox = new google.maps.places.SearchBox(searchBoxTarget[0]);
 	map.controls[google.maps.ControlPosition.TOP_LEFT].push(searchBoxTarget[0]);
 
-	map.addListener("click", function(e) {
+	map.addListener("click", function(e) 
+	{
 		myApp.google.placeMarker(e.latLng, map); 
-		// console.log(myApp.google.currLocation);
 	});
 
-	searchBox.addListener("places_changed", function() { // returns an array of places
+	searchBox.addListener("places_changed", function() 
+	{ // returns an array of places
 		var searchResults = searchBox.getPlaces(); 
 		myApp.google.placeMarker(searchResults[0].geometry.location, map);
-		// console.log(myApp.google.currLocation);
 	});
-
-	myApp.google.addContentRefreshEventListener();
 	myApp.google.stickyMap();
 }
 
@@ -319,18 +287,21 @@ myApp.google.updateContent = function() {
 		var lat = currLocation.lat;
 		var lng = currLocation.lng;
 		$.when(myApp.ig.locationSearch(lat, lng, 750))
-		.then(function(resLocations) {
+		.then(function(resLocations) 
+		{
 			myApp.ig.currLocationsList = resLocations.data;
 			var locationsList = myApp.ig.currLocationsList;
 			$(".ig-feed__gallery").empty();
-			for (var i = 0; i < locationsList.length/2; i++) 
+			for (var i = 0; i < locationsList.length; i++) 
 			{
-				console.log(locationsList[i].name)
+				console.log(i, locationsList[i].name)
 				$.when(myApp.ig.getMediaByLocationID(locationsList[i].id))
 				.then(function(resMedia) {
+					console.log(resMedia);
 					if (resMedia.data != null) 
 					{
-						resMedia.data.forEach(function(post) {
+						resMedia.data.forEach(function(post) 
+						{
 							$(".ig-feed__gallery").append(`<div class="container">
 								<div class="container__image">
 								<img src="${post.images.standard_resolution.url}" alt="" class="">
@@ -344,130 +315,20 @@ myApp.google.updateContent = function() {
 	}
 }
 
-/*
-
-myApp.google.addContentRefreshEventListener = function() {
-	// console.log("LWITJ@(U@(U($JOGIEJOIG@JO$TIJ@#");
-	$(".content-refresh").on("click", function() {
-		// console.log("hihihihihihihi");
-		var currLocation = myApp.google.currLocation;
-		if (currLocation.lat != null && currLocation.lng != null) {
-			var lat = currLocation.lat;
-			var lng = currLocation.lng;
-			// myApp.ig.locationSearch(lat, lng, 750).then(getMediaByLocationIDs())
-			// console.log("made it here");
-			$.when(myApp.ig.locationSearch(lat, lng, 750))
-			.then(function(resLocations) {
-				myApp.ig.currLocationsList = resLocations.data;
-				var locationsList = myApp.ig.currLocationsList;
-				console.log("FIRST RESPONSE!!!", resLocations)
-				$(".ig-feed__gallery").empty();
-				for (var i = 0; i < locationsList.length/2; i++) {
-					console.log(locationsList[i].name)
-					$.when(myApp.ig.getMediaByLocationID(locationsList[i].id))
-					.then(function(resMedia) {
-						// console.log("locsearchid resp", response);
-						// console.log("slaksgjasg", response.data);
-						console.log("RESPONSERESPONSE", resMedia);
-						if (resMedia.data != null) {
-							resMedia.data.forEach(function(post) {
-								// console.log("laksgjlaksjglaksjglkasjglkasjlgkajsljga");
-								$(".ig-feed__gallery").append(`<div class="container">
-									<div class="container__image">
-									<img src="${post.images.standard_resolution.url}" alt="" class="">
-									</div>
-									</div>`);
-							});
-						}
-						else {
-							console.log(i);
-							console.log(locationsList[i]);
-							console.log(locationsList[0]);
-							console.log("no data for", locationsList[i].name)
-							// console.log(response);
-							// console.log(response.data);
-							// alert("No posts");
-						}
-					});
-				}
-			});
-			// $.when(myApp.ig.getMediaByLocationID("212920998"))
-			// 	.then(function(response) {
-			// 		// console.log("locsearchid resp", response);
-			// 		// console.log("slaksgjasg", response.data);
-			// 		response.data.forEach(function(post) {
-			// 			// console.log("laksgjlaksjglaksjglkasjglkasjlgkajsljga");
-			// 			$(".ig-feed__gallery").append(`<div class="container">
-			// 				<div class="container__image">
-			// 				<img src="${post.images.standard_resolution.url}" alt="" class="">
-			// 				</div>
-			// 				</div>`);
-			// 		});
-			// 	});
-		}
-	});
-} */
-
-// myApp.google.stickyMap = function() {
-// 	var initialOffset = $(".map-container").offset().top;
-// 	var headerHeight = $("nav").height();
-// 	// $bottom = $containerHeight + $(".sticky-container").offset().top;
-// 	// $maxPoint = $containerHeight - $(".social-media").height();
-// 	$(window).scroll(function() {
-// 		if ($(window).scrollTop() >= 0)
-// 		{
-// 			var expansionValue = $(window).scrollTop();
-// 			$(".map-container").css("height", `calc(100vh - 60px + ${expansionValue}px)`);
-// 			if ($(window).scrollTop() >= headerHeight)
-// 			{
-// 				var adjustmentDistance = $(window).scrollTop()-headerHeight;
-// 				$(".map-container").css("transform", `translate3d(0px, ${adjustmentDistance}px, 0px)`);
-// 				$(".map-container").css("height", "calc(100vh)");
-// 			}
-// 			else
-// 			{
-// 				$(".map-container").css("transform", `translate3d(0px, 0px, 0px)`);
-// 			}
-// 		}
-// 	});
-// }
-
-// myApp.google.stickyMap = function() {
-// 	var initialOffset = $(".map-container").offset().top;
-// 	var headerHeight = $("nav").height();
-// 	// $bottom = $containerHeight + $(".sticky-container").offset().top;
-// 	// $maxPoint = $containerHeight - $(".social-media").height();
-// 	$(window).scroll(function() {
-// 		if (window.scrollY >= 0)
-// 		{
-// 			var expansionValue = window.scrollY;
-// 			$(".map-container").css("height", `calc(100vh - 60px + ${expansionValue}px)`);
-// 			if (window.scrollY >= headerHeight)
-// 			{
-// 				var adjustmentDistance = window.scrollY-headerHeight;
-// 				$(".map-container").css("transform", `translate3d(0px, ${adjustmentDistance}px, 0px)`);
-// 				$(".map-container").css("height", "calc(100vh)");
-// 			}
-// 			else
-// 			{
-// 				$(".map-container").css("transform", `translate3d(0px, 0px, 0px)`);
-// 			}
-// 		}
-// 	});
-// }
-
 myApp.google.stickyMap = function() {
 	var headerHeight = $("nav").height();
 	var footerPosition = $("footer").offset().top;
-	$(window).scroll(function() {
-		if (window.scrollY >= 0)
+	$(window).scroll(function() 
+	{
+		if (window.scrollY >= 0) 
 		{
 			var expansionValue = window.scrollY;
 			$(".map-container").css("height", `calc(100vh - 60px + ${expansionValue}px)`);
-			if (window.scrollY >= headerHeight)
+			if (window.scrollY >= headerHeight) 
 			{
 				$(".map-container").css("height", "calc(100vh)");
-				if (window.scrollY >= footerPosition) {
+				if (window.scrollY >= footerPosition) 
+				{
 					console.log("hi");
 				}
 			}
@@ -476,49 +337,44 @@ myApp.google.stickyMap = function() {
 }
 
 myApp.ig.addFilterListener = function() {
-	$(".filters-toggle").on("click", function() {
+	$(".filters-toggle").on("click", function() 
+	{
 		$(".filters").toggleClass("filters--visible");
-		if ($(".filters").hasClass("filters--visible")) {
+		if ($(".filters").hasClass("filters--visible")) 
+		{
 			$(this).html("Hide Location Filters");
 		}
-		else {
+		else 
+		{
 			$(this).html("Show Location Filters");
 		}
 	});
 }
 
-
-
-		// if ($(window).scrollTop() >= $offset) {
-		// 	if ($(window).scrollTop() >= $bottom) {
-		// 		$(".social-media").css({transform: "translate(0px,"+$maxPoint+"px)"});
-		// 	}else{
-		// 		$scroll = $(window).scrollTop() - $offset;
-		// 		$(".social-media").css({transform: "translate(0px,"+$scroll+"px)"});
-		// 	}
-		// }else{
-		// 	$(".social-media").css({transform: "translate(0px,0px)"});
-		// }
-
-$(function() {
-	
-});
-
-
-// https://api.instagram.com/v1/locations/{location-id}/media/recent?access_token=ACCESS-TOKEN
-myApp.locationRecent = function() {
-	
+myApp.ig.addHashtagListener = function() {
+	$(".hashtag-search__submit").on("click", function(event) 
+	{
+		event.preventDefault();
+		myApp.ig.hashtag = $(".hashtag-search__field").val();
+		$(".hashtag-search__field").val("");
+		if ($(".hashtag-search__curr"))
+		{
+			$(".hashtag-search__curr").remove();
+		}
+		$(".hashtag-search").after(`<div class="hashtag-search__curr">
+			<button>X</button>#${myApp.ig.hashtag}
+			</div>`);
+		myApp.ig.updateContent();
+	});
+	$(".options-bar").on("click", ".hashtag-search__curr button", function() 
+	{
+		$(".hashtag-search__curr").remove();
+		myApp.ig.hashtag = null;
+		myApp.ig.updateContent();
+	});
 }
 
-// https://api.instagram.com/v1/tags/{tag-name}/media/recent?access_token=ACCESS-TOKEN
 
-// myApp.popular = function() {
-
-// }
-
-// myApp.tagByName = function () {
-// 	this.
-// }
 
 $(function() {
 	myApp.init();
