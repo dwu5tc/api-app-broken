@@ -1,16 +1,12 @@
 .map-view {
+	width: 50%;
 	position: fixed;
 	top: 90px;
 	display: flex;
 	justify-content: center;
-	background-color: olive;
 	&__search-bar {
-	// position: absolute;
 	z-index: 10;
 		&__search {
-
-		}
-		&__submit {
 
 		}
 	}
@@ -27,17 +23,25 @@
 		margin-top: 10px;
 		margin-left: 15px;
 		width: calc(100% - 30px);
+		border: 1.5px solid #666;
+	}
+	@media (max-width: 780px) {
+		width: 100%;
+		position: relative;
+		top: initial;
 	}
 }
 
-.map-view * {
-	overflow: visible;
-}
+// .map-view * {
+// 	overflow: hidden;
+// }
 
 .map-container {
 	display: flex;
-	// width: calc(100% - 20px);
 	width: 100%;
 	height: calc(100vh - 80px);
 	border: 0;
+	@media (max-width: 780px) {
+		
+	}
 }

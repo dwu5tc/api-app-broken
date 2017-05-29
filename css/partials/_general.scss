@@ -1,5 +1,5 @@
 html {
-	background-color: #333;
+	background-color: #000;
 }
 
 * {
@@ -16,23 +16,19 @@ h1 {
 	font-size: 55px;
 	font-weight: 500;
 	letter-spacing: 3px;
+	line-height: 1.4;
 	color: #333;
 	text-shadow: 1px 0px 0px #D6D6D6, 
 	2px 0px 0px #D6D6D6,
 	3px 0px 0px #D6D6D6,
 	4px 0px 0px #D6D6D6;
-}
-
-h2 {
-
-}
-
-h3 {
-
-}
-
-p {
-
+	@media (max-width: 780px) {
+		font-size: 30px;
+		letter-spacing: 2px;
+		text-shadow: 1px 0px 0px #D6D6D6, 
+		2px 0px 0px #D6D6D6;
+		line-height: 1.6;
+	}
 }
 
 ul {
@@ -41,21 +37,31 @@ ul {
 	padding: 0;
 }
 
-li {
-}
-
 span {
 	font-size: 14px;
+	font-weight: 400;
+}
+
+button {
+	&:focus {
+		outline: none;
+	}
+	&:hover {
+		opacity: 0.8;
+	}
 }
 
 .wrapper {
+	margin: 0 auto;
 	width: 100%;
-	// display: flex;
-	// justify-content: space-between;
-	background-color: #000;
-}
-
-.map-view,
-.ig-feed {
-	width: 50%;
+	background-color: #FFF;
+	@media (max-width: 780px) {
+		width: 90%;
+		display: flex;
+		flex-flow: column wrap;
+		align-items: center;
+	}
+	@media (max-width: 480px) {
+		width: 100%;
+	}
 }
