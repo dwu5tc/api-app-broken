@@ -1,6 +1,7 @@
 .options-bar {
+	// padding: 5px 10px 5px 10px;
 	width: 100%;
-	height: 45px;
+	// height: 45px;
 	background-color: #EEEEEE;
 	// > * {
 	// 	height: 45px;
@@ -18,12 +19,17 @@
 		height: 45px;
 	}
 	&__field {
-		width: 250px;
+		width: 200px;
+		font-family: 'Montserrat', sans-serif;
+		font-size: 14px;
+		color: #333;
+		padding-left: 15px;
 	}
 	&__submit {
 		background-color: transparent;
 		border: none;
 		width: 45px;
+		font-size: 16px; // magnifying class
 	}
 }
 
@@ -34,15 +40,18 @@
 	float: left;
 	height: 45px;
 	background-color: transparent;
-	button {
+	i {
 		color: red;
-		margin-right: 5px;
+		margin-right: 3px;
 	}
 }
 
 .filters-toggle {
 	float: right;
 	height: 45px;
+	i {
+		margin-right: 5px;
+	}
 }
 
 .ig-feed {
@@ -51,7 +60,7 @@
 	display: flex;
 	flex-direction: column;
 
-	height: 2000px;
+	// height: 2000px;
 
 	// justify-content: center;
 	&__gallery {
@@ -63,7 +72,7 @@
 		justify-content: flex-start;
 		align-items: center;
 	}
-	background-color: darkcyan;
+	background-color: #333;
 }
 
 .content-refresh {

@@ -120,20 +120,35 @@ legend, button::-moz-focus-inner, input::-moz-focus-inner {
 * {
   box-sizing: border-box; }
 
+html {
+  background-color: #333; }
+
 * {
-  margin: 0; }
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  color: #333; }
 
 body {
   background-color: #222; }
+
+h1 {
+  font-size: 55px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  color: #333;
+  text-shadow: 1px 0px 0px #D6D6D6,  2px 0px 0px #D6D6D6, 3px 0px 0px #D6D6D6, 4px 0px 0px #D6D6D6; }
 
 ul {
   list-style-type: none;
   list-style: none;
   padding: 0; }
 
+span {
+  font-size: 14px; }
+
 .wrapper {
   width: 100%;
-  background-color: goldenrod; }
+  background-color: #000; }
 
 .map-view,
 .ig-feed {
@@ -141,12 +156,23 @@ ul {
 
 nav {
   width: 100%;
-  background-color: red;
-  height: 80px; }
+  background-color: #FFF;
+  height: 90px;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-content: center;
+  -ms-flex-line-pack: center;
+  align-content: center; }
+  nav h1 {
+    line-height: 1.4; }
 
 .map-view {
   position: fixed;
-  bottom: 0;
+  top: 90px;
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
@@ -162,7 +188,13 @@ nav {
     width: 100%;
     height: 45px;
     background-color: #fff;
-    padding: 0 11px 0 13px; }
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: #333;
+    padding-left: 15px;
+    margin-top: 10px;
+    margin-left: 15px;
+    width: calc(100% - 30px); }
 
 .map-view * {
   overflow: visible; }
@@ -177,7 +209,6 @@ nav {
 
 .options-bar {
   width: 100%;
-  height: 45px;
   background-color: #EEEEEE; }
   .options-bar button {
     background-color: transparent;
@@ -188,11 +219,16 @@ nav {
   .hashtag-search > * {
     height: 45px; }
   .hashtag-search__field {
-    width: 250px; }
+    width: 200px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: #333;
+    padding-left: 15px; }
   .hashtag-search__submit {
     background-color: transparent;
     border: none;
-    width: 45px; }
+    width: 45px;
+    font-size: 16px; }
 
 .hashtag-search__curr {
   margin-left: 10px;
@@ -205,13 +241,15 @@ nav {
   float: left;
   height: 45px;
   background-color: transparent; }
-  .hashtag-search__curr button {
+  .hashtag-search__curr i {
     color: red;
-    margin-right: 5px; }
+    margin-right: 3px; }
 
 .filters-toggle {
   float: right;
   height: 45px; }
+  .filters-toggle i {
+    margin-right: 5px; }
 
 .ig-feed {
   position: relative;
@@ -222,8 +260,7 @@ nav {
   -webkit-flex-direction: column;
   -ms-flex-direction: column;
   flex-direction: column;
-  height: 2000px;
-  background-color: darkcyan; }
+  background-color: #333; }
   .ig-feed__gallery {
     width: 100%;
     margin: 0 auto;
@@ -275,9 +312,3 @@ ul.filters {
 img {
   max-width: 100%;
   display: block; }
-
-footer {
-  width: 100%;
-  height: 20px;
-  background-color: orange;
-  clear: both; }

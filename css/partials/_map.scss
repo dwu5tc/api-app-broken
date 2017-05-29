@@ -1,14 +1,11 @@
 .map-view {
 	position: fixed;
-	bottom: 0;
-	// position: relative;
+	top: 90px;
 	display: flex;
 	justify-content: center;
 	background-color: olive;
 	&__search-bar {
 	// position: absolute;
-	
-	// top: 60px;
 	z-index: 10;
 		&__search {
 
@@ -23,8 +20,13 @@
 		width: 100%;
 		height: 45px;
 		background-color: #fff;
-		// margin-left: 12px;
-		padding: 0 11px 0 13px;
+		font-family: 'Montserrat', sans-serif;
+		font-size: 14px;
+		color: #333;
+		padding-left: 15px;
+		margin-top: 10px;
+		margin-left: 15px;
+		width: calc(100% - 30px);
 	}
 }
 

@@ -1,10 +1,15 @@
 // >750 range through multiple ajax calls then checking returned location
 	// if within boundaries
+// hashtags only show up for caption
+// fix landscape photos 
 
 var myApp = {
 	ig: {},
 	google: {}
 }
+
+var lol;
+var arg = [];
 
 myApp.google.API_KEY = "AIzaSyDnP_DNUIMP3V6yZlGWdLepItdtcmsnJEo";
 myApp.ig.CLIENT_ID = " 9eabcfa6570c43c8bcbf0cba7afc004e";
@@ -19,8 +24,8 @@ myApp.google.currLocation = {
 	lng: null
 }
 myApp.ig.currLocationsList = [];
-myApp.ig.hashtag = null;
-myApp.ig.currHashtagFilter;
+myApp.ig.currHashtag = null;
+myApp.ig.currPosts = [];
 
 myApp.init = function() {
 	myApp.google.init();
@@ -125,6 +130,7 @@ myApp.mediaInfoByID = function(id) {
 
 // https://api.instagram.com/v1/locations/search?lat=48.858844&lng=2.294351&access_token=ACCESS-TOKEN
 myApp.ig.locationSearch = function(lat, lng, distance) {
+	console.log("my.ig.locationSearch");
 	return $.ajax({
 		url: "https://api.instagram.com/v1/locations/search",
 		method: "GET",
@@ -251,6 +257,7 @@ myApp.google.init = function()
 
 	searchBox = new google.maps.places.SearchBox(searchBoxTarget[0]);
 	map.controls[google.maps.ControlPosition.TOP_LEFT].push(searchBoxTarget[0]);
+	$(".map-view__search-box").attr("placeholder", "Search a Location");
 
 	map.addListener("click", function(e) 
 	{
@@ -277,42 +284,83 @@ myApp.google.placeMarker = function(latLng, map) {
 	myApp.google.currLocation.lat = latLng.lat();
 	myApp.google.currLocation.lng = latLng.lng();
 	map.panTo(latLng);
-	myApp.google.updateContent();
+	myApp.ig.pullContent();
 }
 
-myApp.google.updateContent = function() {
+myApp.ig.pullContent = function() {
+	$(".ig-feed__gallery").empty();
+	myApp.ig.currPosts = [];
 	var currLocation = myApp.google.currLocation;
 	if (currLocation.lat != null && currLocation.lng != null) 
 	{
 		var lat = currLocation.lat;
 		var lng = currLocation.lng;
 		$.when(myApp.ig.locationSearch(lat, lng, 750))
-		.then(function(resLocations) 
-		{
-			myApp.ig.currLocationsList = resLocations.data;
-			var locationsList = myApp.ig.currLocationsList;
-			$(".ig-feed__gallery").empty();
-			for (var i = 0; i < locationsList.length; i++) 
-			{
-				console.log(i, locationsList[i].name)
-				$.when(myApp.ig.getMediaByLocationID(locationsList[i].id))
-				.then(function(resMedia) {
-					console.log(resMedia);
-					if (resMedia.data != null) 
-					{
-						resMedia.data.forEach(function(post) 
-						{
-							$(".ig-feed__gallery").append(`<div class="container">
-								<div class="container__image">
-								<img src="${post.images.standard_resolution.url}" alt="" class="">
-								</div>
-								</div>`);
-						});
-					}
-				});
-			}
-		});
+		.then(myApp.ig.updateCurrLocationsList);
 	}
+	// else
+	// {
+	// 	alert("No locations selected.");
+	// }
+}
+
+myApp.ig.updateCurrLocationsList = function(response) {
+	myApp.ig.currLocationsList = response.data;
+
+	args = myApp.ig.currLocationsList.map(n => myApp.ig.getMediaByLocationID(n.id));
+
+	$.when(...args)
+	.then(function(...response) {
+		console.log(response);
+		for (var i = 0; i < response.length; i++) 
+		{
+			response[i][0].data.forEach(function(post) 
+			{
+				var tempObj = 
+				{
+					id: post.id,
+					location: name,
+					image: post.images.standard_resolution,
+					likes: post.likes.count,
+					comments: post.comments.count,
+					// link: post.link,
+					tags: post.tags,
+					user: post.user.username,
+					userPic: post.user.profile_picture
+				};
+				myApp.ig.currPosts.push(tempObj);
+				console.log(tempObj);
+			});
+		}
+		myApp.ig.updateGallery();
+	});
+}
+
+myApp.ig.updateGallery = function() {
+	if (myApp.ig.currHashtag != null) 
+	{
+		for (var i = 0; i < myApp.ig.currPosts.length; i++)
+		if (myApp.ig.currPosts[i].tags.includes(myApp.ig.currHashtag)) 
+		{
+			$(".ig-feed__gallery").append(`<div class="container">
+				<div class="container__image">
+				<img src="${myApp.ig.currPosts[i].image.url}" alt="" class="">
+				</div>
+				</div>`);
+		}
+	}
+	else 
+	{
+		for (var i = 0; i < myApp.ig.currPosts.length; i++) 
+		{
+			$(".ig-feed__gallery").append(`<div class="container">
+				<div class="container__image">
+				<img src="${myApp.ig.currPosts[i].image.url}" alt="" class="">
+				</div>
+				</div>`);
+		}
+	}
+	
 }
 
 myApp.google.stickyMap = function() {
@@ -322,8 +370,10 @@ myApp.google.stickyMap = function() {
 	{
 		if (window.scrollY >= 0) 
 		{
+			$(".map-view").css("top", "initial");
+			$(".map-view").css("bottom", 0);
 			var expansionValue = window.scrollY;
-			$(".map-container").css("height", `calc(100vh - 60px + ${expansionValue}px)`);
+			$(".map-container").css("height", `calc(100vh - 90px + ${expansionValue}px)`);
 			if (window.scrollY >= headerHeight) 
 			{
 				$(".map-container").css("height", "calc(100vh)");
@@ -342,11 +392,11 @@ myApp.ig.addFilterListener = function() {
 		$(".filters").toggleClass("filters--visible");
 		if ($(".filters").hasClass("filters--visible")) 
 		{
-			$(this).html("Hide Location Filters");
+			$(this).html(`<i class="fa fa-chevron-up" aria-hidden="true"></i></span>Location Filters</span>`);
 		}
 		else 
 		{
-			$(this).html("Show Location Filters");
+			$(this).html(`<i class="fa fa-chevron-down" aria-hidden="true"></i><span>Location Filters</span>`);
 		}
 	});
 }
@@ -355,26 +405,33 @@ myApp.ig.addHashtagListener = function() {
 	$(".hashtag-search__submit").on("click", function(event) 
 	{
 		event.preventDefault();
-		myApp.ig.hashtag = $(".hashtag-search__field").val();
-		$(".hashtag-search__field").val("");
-		if ($(".hashtag-search__curr"))
+		myApp.ig.currHashtag = $(".hashtag-search__field").val();
+
+		if (myApp.ig.currHashtag.replace(/\s/g, '') == "") 
 		{
-			$(".hashtag-search__curr").remove();
+			alert("Invalid hashtag.");
 		}
-		$(".hashtag-search").after(`<div class="hashtag-search__curr">
-			<button>X</button>#${myApp.ig.hashtag}
-			</div>`);
-		myApp.ig.updateContent();
+		else 
+		{
+			$(".hashtag-search__field").val("");
+			if ($(".hashtag-search__curr"))
+			{
+				$(".hashtag-search__curr").remove();
+			}
+			$(".hashtag-search").after(`<div class="hashtag-search__curr">
+				<button><i class="fa fa-times" aria-hidden="true"></i></button><span>#${myApp.ig.currHashtag}
+				</span></div>`);
+			myApp.ig.updateGallery();
+		}
 	});
+
 	$(".options-bar").on("click", ".hashtag-search__curr button", function() 
 	{
 		$(".hashtag-search__curr").remove();
-		myApp.ig.hashtag = null;
-		myApp.ig.updateContent();
+		myApp.ig.currHashtag = null;
+		myApp.ig.updateGallery();
 	});
 }
-
-
 
 $(function() {
 	myApp.init();
