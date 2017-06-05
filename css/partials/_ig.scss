@@ -1,9 +1,10 @@
 .ig-feed {
-	width: 50%;
+	width: 65%;
 	position: relative;
 	float: right;
 	display: flex;
 	flex-flow: row wrap;
+	box-shadow: 0 4px 3px 3px rgba(0, 0, 0, 0.10);
 	&__gallery {
 		position: relative;
 		width: 100%;
@@ -28,7 +29,7 @@
 	top: 0; right: 0;
 	bottom: 0; left: 0;
 	z-index: 99;
-	visibility: hidden;
+	visibility: visible;
 	span {
 		transform: translateY(-10px); // adjust for "footer"
 	}
@@ -39,6 +40,10 @@
 	flex-flow: row wrap;
 	width: 100%;
 	background-color: #EEEEEE;
+	padding: 10px 15px;
+	box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.1);
+	position: relative;
+	z-index: 10;
 	@media (max-width: 480px) {
 		flex-direction: column;
 		align-items: center;
@@ -102,18 +107,26 @@
 }
 
 ul.filters {
+	display: flex;
+	flex-flow: row wrap;
 	position: relative;
 	z-index: 20;
 	width: 100%;
-	display: none;
-	flex-flow: row wrap;
 	background-color: #FFF;
 	clear: both;
+	opacity: 0;
+	max-height: 0;
+	-webkit-transition: all 0.3s ease-in-out;
+	transition: all 0.3s ease-in-out;
 	&--visible {
-		display: flex;
+		max-height: 800px;
+		opacity: 1;
 	}
 	li {
 		width: 50%;
+		button {
+			text-transform: capitalize;
+		}
 	}
 }
 
@@ -137,6 +150,7 @@ button.location {
 	padding-top: 33.33%;
 	float: left;
 	overflow: hidden;
+	transition: all 0.5s ease-in-out;
 	&__image {
 		position: absolute;
 		top: 0;

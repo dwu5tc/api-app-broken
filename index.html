@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="css/style.css"/>
+	<link rel="shortcut icon" href="imgs/favicon.png"/>
 	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,500" rel="stylesheet">
 	<title>spots.</title>
 	<script src="https://use.fontawesome.com/7d84edbcfa.js"></script>
@@ -17,11 +18,7 @@
 	<main>
 		<div class="wrapper">
 			<section class="map-view">
-				<input class="map-view__search-box" type="text" placeholder="Search">
-<!-- 				<form class="map-view__search-bar">
-					<input type="search" placeholder="..." name="search" class="map-view__search-bar__search">
-					<input type="submit" value="Go" class="map-view__search-bar__submit">
-				</form> -->
+				<input class="map-view__search-box" type="text" placeholder="">
 				<div class="map-container"></div>
 			</section>
 			<section class="ig-feed">
@@ -31,44 +28,12 @@
 						<button type="submit" class="hashtag-search__submit" value="GO"><i class="fa fa-search" aria-hidden="true"></i></button>
 					</form>
 					<div class="hashtag-search__curr"><span>N/A</span></div>
-					<button class="filters-toggle"><i class="fa fa-chevron-up" aria-hidden="true"></i><span>Location Filters</span></button>
+					<button class="filters-toggle"><i class="fa fa-chevron-down" aria-hidden="true"></i><span>Location Filters</span></button>
 				</div>
-				<ul class="filters filters--visible">
-					<li><button class="location location--selected">AGO - Art Gallery of Ontario</button></li>
-					<li><button class="location location--selected">Toronto, Ontario</button></li>
+				<ul class="filters">
 				</ul>
 				<div class="ig-feed__gallery">
 					<div class="no-content"><span>No Content :(</span></div>
-					<div class="container">
-						<div class="container__image">
-							<img src="https://scontent.cdninstagram.com/t51.2885-15/s640x640/sh0.08/e35/15875713_644227485749905_3277612615865466880_n.jpg" alt="" class="gallery-item" id="1428581368899978451_4734181" data-location="AGO - Art Gallery of Ontario">
-						</div>
-					</div>
-					<div class="container">
-						<div class="container__image">
-							<img src="https://scontent.cdninstagram.com/t51.2885-15/s640x640/sh0.08/e35/15877471_1561245417237258_3720078385762795520_n.jpg" alt="" class="gallery-item" id="1428543634877457635_2919590029" data-location="AGO - Art Gallery of Ontario">
-						</div>
-					</div>
-					<div class="container">
-						<div class="container__image">
-							<img src="https://scontent.cdninstagram.com/t51.2885-15/s640x640/sh0.08/e35/15876930_251940131902370_5749508367936651264_n.jpg" alt="" class="gallery-item" id="1426405771000148492_2919590029" data-location="AGO - Art Gallery of Ontario">
-						</div>
-					</div>
-					<div class="container">
-						<div class="container__image">
-							<img src="https://scontent.cdninstagram.com/t51.2885-15/s640x640/sh0.08/e35/15802570_359822617719091_4023405924147265536_n.jpg" alt="" class="gallery-item" id="1420533485403632548_2919590029" data-location="AGO - Art Gallery of Ontario">
-						</div>
-					</div>
-					<div class="container">
-						<div class="container__image">
-							<img src="https://scontent.cdninstagram.com/t51.2885-15/sh0.08/e35/p640x640/17932224_797461853750602_7642583489333690368_n.jpg" alt="" class="gallery-item" id="1495225026387243360_236730778" data-location="Toronto, Ontario">
-						</div>
-					</div>
-					<div class="container">
-						<div class="container__image">
-							<img src="https://scontent.cdninstagram.com/t51.2885-15/s640x640/sh0.08/e35/15877095_1712682942375938_3660300678749749248_n.jpg" alt="" class="gallery-item" id="1421983663545303628_2919590029" data-location="Toronto, Ontario">
-						</div>
-					</div>
 					<div class="copyright">
 						<span>Copyright © Dean Wu 2017</span>
 					</div>
@@ -77,10 +42,8 @@
 		</div>
 	</main>
 	<footer>
-		
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAfWEHrAY4JNFBFyQ9-FWMo1ifx3wbr1jY&libraries=places"></script>
-		<!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAfWEHrAY4JNFBFyQ9-FWMo1ifx3wbr1jY"></script> -->
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqJcWODf8O1xW6F22voppWat2wRGcAJKM&libraries=places"></script>
 		<script src="js/script.js"></script>
 	</footer>
 </body>

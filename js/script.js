@@ -1,56 +1,72 @@
 // >750 range through multiple ajax calls; check returned location == within set boundary's coords
 // hashtags only given for the caption (not the comments)
-// fix landscape photos 
-// phone touch events
+// fix landscape photos ***DONE
+// phone touch events ***DONE
 // more than 20 photos (pagination)
 // hover information
 // on click information and link
 // refactor code; reduce redundancies with reusable methods
-// custom google markers
+// custom google markerList
+// select all + select none on filters
+// load more gallery
+// animations
+// hashtag filter and location filter should be consistent in how they remove gallery items
+// to the top button
 
-var myApp = {
+// "use strict"; // breaks everything
+
+var spots = {
 	ig: {},
 	google: {}
 }
 
-var lol;
-var arg = [];
-
-myApp.google.API_KEY = "AIzaSyDnP_DNUIMP3V6yZlGWdLepItdtcmsnJEo";
-myApp.ig.CLIENT_ID = " 9eabcfa6570c43c8bcbf0cba7afc004e";
-myApp.ig.CLIENT_SECRET = "3d40f599366c49bd88553122e89b65a0";
-myApp.ig.accessToken = "4734181.aeb44d4.23d517c9f493425cb68b37b5f8f2f6d1";
-myApp.google.map;
-myApp.google.searchBox;
-myApp.google.currMarker = null;
-myApp.google.markers = [];
-myApp.google.currLocation = {
+spots.google.API_KEY = "AIzaSyCqJcWODf8O1xW6F22voppWat2wRGcAJKM";
+spots.ig.CLIENT_ID = " 9eabcfa6570c43c8bcbf0cba7afc004e";
+spots.ig.CLIENT_SECRET = "3d40f599366c49bd88553122e89b65a0";
+spots.ig.accessToken = "4734181.aeb44d4.23d517c9f493425cb68b37b5f8f2f6d1";
+// spots.ig.accessToken = "2919590029.474fd20.2a6a5b3f2954456f8636a99578b0e981";
+spots.google.map;
+spots.google.searchBox;
+spots.google.marker = null;
+// spots.google.markersList = [];
+spots.google.currLocation = {
 	lat: null,
 	lng: null
 }
-myApp.ig.currLocationsList = [];
-myApp.ig.currHashtag = "";
-myApp.ig.currPosts = [];
-myApp.ig.currPostsLocations = [];
+spots.ig.currLocationsList = [];
+spots.ig.currHashtag = "";
+spots.ig.currPosts = [];
+spots.ig.currPostsLocations = [];
+spots.ig.maxIndex = 0; 
+spots.ig.breakpoint = 0;
 
-myApp.init = function() {
-	myApp.google.init();
-	myApp.ig.init();
+spots.init = function() {
+	spots.google.init();
+	spots.ig.init();
 }
 
-https://api.instagram.com/v1/media/{media-id}?access_token=ACCESS-TOKEN
-myApp.getMediaInfoByID = function(id) {
 
+
+// https://www.instagram.com/oauth/authorize/?client_id=474fd20394a148f09f488fc565b8ff5e&redirect_uri=http://localhost&response_type=token&scope=public_content+basic
+
+https://api.instagram.com/v1/media/{media-id}?access_token=ACCESS-TOKEN
+spots.getMediaInfoByID = function(id) {
+
+}
+
+// search-box animation: center to left align 
+spots.addSearchBoxFocusListener = function() {
+	// $(".input")
 }
 
 // https://api.instagram.com/v1/locations/search?lat=48.858844&lng=2.294351&access_token=ACCESS-TOKEN
-myApp.ig.getLocationsByCoords = function(lat, lng, distance) {
+spots.ig.getLocationsByCoords = function(lat, lng, distance) {
 	return $.ajax({
 		url: "https://api.instagram.com/v1/locations/search",
 		method: "GET",
 		dataType: "jsonp",
 		data: {
-			access_token: myApp.ig.accessToken,
+			access_token: spots.ig.accessToken,
 			lat: lat,
 			lng: lng,
 			distance: distance
@@ -58,61 +74,34 @@ myApp.ig.getLocationsByCoords = function(lat, lng, distance) {
 	});
 }
 
-myApp.ig.getMediaByLocationID = function(...params) {
-	var endpoint = `https://api.instagram.com/v1/locations/${params[0]}/media/recent`
-	if (params.length < 2) 
+spots.ig.getMediaByLocationID = function(id) {
+	var endpoint = `https://api.instagram.com/v1/locations/${id}/media/recent`
 	{
 		return $.ajax({
 			url: endpoint,
 			method: "GET",
 			dataType: "jsonp",
 			data: {
-				access_token: myApp.ig.accessToken,
-			}
-		});
-	}
-	else if (params[1] == 1) 
-	{
-		return $.ajax({
-			url: endpoint,
-			method: "GET",
-			dataType: "jsonp",
-			data: {
-				access_token: myApp.ig.accessToken,
-				max_tag_id: params[2],
-				count: params[3],
-			}
-		});
-	}
-	else if (params[1] == 0) 
-	{
-		return $.ajax({
-			url: endpoint,
-			method: "GET",
-			dataType: "jsonp",
-			data: {
-				access_token: myApp.ig.accessToken,
-				min_tag_id: params[2],
-				count: params[3],
+				access_token: spots.ig.accessToken,
 			}
 		});
 	}
 }
 
-myApp.ig.init = function() 
+spots.ig.init = function() 
 {
-	myApp.ig.addFilterListener();
-	myApp.ig.addHashtagListener();
-	myApp.ig.addLocationListener();
+	spots.ig.addFilterStateToggleListener();
+	spots.ig.addHashtagSubmitListener();
+	spots.ig.addLocationListener();
+	spots.ig.addAppendOnScrollListener();
 }
 
-myApp.google.init = function() 
+spots.google.init = function() 
 {
 	var mapTarget = $(".map-container");
 	var searchBoxTarget = $(".map-view__search-box");
-	var map = myApp.google.map;
-	var searchBox = myApp.google.searchBox;
-
+	var map = spots.google.map;
+	var searchBox = spots.google.searchBox;
 	map = new google.maps.Map(mapTarget[0], 
 	{
 		center: 
@@ -123,58 +112,69 @@ myApp.google.init = function()
 		zoom: 14,
 		disableDefaultUI: true,
 		draggableCursor: "default",
-		clickableIcons: false
+		clickableIcons: false,
+		gestureHandling: "cooperative"
 	});
-
 	searchBox = new google.maps.places.SearchBox(searchBoxTarget[0]);
 	map.controls[google.maps.ControlPosition.TOP_LEFT].push(searchBoxTarget[0]);
 	$(".map-view__search-box").attr("placeholder", "Search a Location");
-
 	map.addListener("click", function(e) 
 	{
-		myApp.google.placeMarker(e.latLng, map); 
+		if ($(window).width() > 780) { // disble marker dropping on tablets/mobiles
+			spots.google.placeMarker(e.latLng, map); 
+		}
 	});
-
 	searchBox.addListener("places_changed", function() 
 	{ // returns an array of places
 		var searchResults = searchBox.getPlaces(); 
-		myApp.google.placeMarker(searchResults[0].geometry.location, map);
+		spots.google.placeMarker(searchResults[0].geometry.location, map);
 	});
-	myApp.google.stickyMap();
+	spots.google.stickyMap();
 }
 
-myApp.google.placeMarker = function(latLng, map) {
-	if (myApp.google.currMarker != null) 
+// place a marker and pan to it
+// beginning of the chain
+spots.google.placeMarker = function(latLng, map) {
+	if (spots.google.marker != null) 
 	{
-		myApp.google.currMarker.setMap(null);
+		spots.google.marker.setMap(null);
 	}
-	myApp.google.currMarker = new google.maps.Marker({
+	spots.google.marker = new google.maps.Marker({
 		position: latLng,
-		map: map
+		map: map,
+		animation: google.maps.Animation.DROPm,
+		icon: {
+			path: "M500,174.656c-93.768,0-170.056,76.288-170.056,170.063c0,88.456,141.752,256.208,157.92,275.04 c3.04,3.544,7.472,5.584,12.144,5.584s9.104-2.04,12.145-5.584c16.168-18.832,157.92-186.584,157.92-275.04 C670.064,250.944,593.768,174.656,500,174.656z M560.928,339.088c0,33.6-27.336,60.937-60.936,60.937 c-33.601,0-60.937-27.336-60.937-60.937c0-33.6,27.345-60.936,60.944-60.936S560.928,305.488,560.928,339.088z",
+			fillColor: "#212121",
+			fillOpacity: 1,
+			scale: 0.08,
+			size: new google.maps.Size(20, 30),
+			anchor: new google.maps.Point(500, 625) // fixing the anchor point of the pin... IDK
+		}
 	});
-	myApp.google.currLocation.lat = latLng.lat();
-	myApp.google.currLocation.lng = latLng.lng();
+	spots.google.currLocation.lat = latLng.lat();
+	spots.google.currLocation.lng = latLng.lng();
 	map.panTo(latLng);
-	// myApp.ig.getContent();
+	spots.ig.coordsToLocations();
 }
 
-myApp.ig.getContent = function() {
-	myApp.ig.currPosts = [];
-	var currLocation = myApp.google.currLocation;
+// takes google coordinates and maps them to ig locations
+spots.ig.coordsToLocations = function() {
+	spots.ig.currPosts = []; // reset/clear the array
+	var currLocation = spots.google.currLocation;
 	if (currLocation.lat != null && currLocation.lng != null) 
 	{
 		var lat = currLocation.lat;
 		var lng = currLocation.lng;
-		$.when(myApp.ig.getLocationsByCoords(lat, lng, 750))
-		.then(myApp.ig.updateCurrLocationsList);
+		$.when(spots.ig.getLocationsByCoords(lat, lng, 750))
+		.then(spots.ig.updateCurrLocationsList);
 	}
 }
 
-myApp.ig.updateCurrLocationsList = function(response) {
-	myApp.ig.currLocationsList = response.data;
-
-	args = myApp.ig.currLocationsList.map(n => myApp.ig.getMediaByLocationID(n.id));
-
+// consolidates all of the media from each of the 20 
+spots.ig.updateCurrLocationsList = function(response) {
+	spots.ig.currLocationsList = response.data;
+	args = spots.ig.currLocationsList.map(n => spots.ig.getMediaByLocationID(n.id));
 	$.when(...args)
 	.then(function(...response) {
 		console.log(response); // array of response objects 
@@ -183,7 +183,7 @@ myApp.ig.updateCurrLocationsList = function(response) {
 			if (response[i][0].data == undefined) { continue; } // some response objects will have no data; returns error code 400 "this location does not exist"
 			response[i][0].data.forEach(function(post) 
 			{
-				var tempObj = 
+				var postObj = 
 				{
 					id: post.id,
 					location: post.location.name,
@@ -195,52 +195,83 @@ myApp.ig.updateCurrLocationsList = function(response) {
 					user: post.user.username,
 					userPic: post.user.profile_picture
 				};
-				myApp.ig.currPosts.push(tempObj);
-				console.log(tempObj);
+				spots.ig.currPosts.push(postObj);
 			});
 		}
-		myApp.ig.updateGallery();
+		spots.ig.maxIndex = 0;
+		spots.ig.updateGallery();
 	});
 }
 
-myApp.ig.updateGallery = function() {
+// append a single post with proper image positioning relative to its container
+spots.ig.appendPost = function(item) {
+	$(".ig-feed__gallery").append(`<div class="container">
+		<div class="container__image">
+		<img src="${item.image.url}" alt="Instagram Post" class="gallery-item" id="${item.id}" data-location="${item.location}">
+		</div>
+		</div>`);
+	if (item.image.width > item.image.height) 
+	{
+		var w = item.image.width/item.image.height*100;
+		var t = (item.image.width-item.image.height)/2/item.image.width*100;
+		$(`#${item.id}`).css("width", `${w}%`);
+		$(`#${item.id}`).css("max-width", "999%");
+		$(`#${item.id}`).css("transform", `translateX(-${t}%)`);
+	}
+	else if (item.image.width < item.image.height)
+	{
+		var t = (item.image.height-item.image.width)/2/item.image.height*100;
+		$(`#${item.id}`).css("transform", `translateY(-${t}%)`);
+	}
+	if (!(spots.ig.currPostsLocations.includes(item.location)))
+	{
+		spots.ig.currPostsLocations.push(item.location);
+		$(".filters").append(`<li><button class="location location--selected">${item.location}</button></li>`)
+	}
+}
+
+// clear everything
+spots.ig.resetGallery = function() {
 	$(".ig-feed__gallery .container").remove();
 	$(".filters").empty();
-	myApp.ig.currPostsLocations = [];
-	if (myApp.ig.currHashtag != "") 
+}
+
+// update the gallery
+spots.ig.updateGallery = function() {
+	if (spots.ig.maxIndex == 0) 
 	{
-		
-		for (var i = 0; i < myApp.ig.currPosts.length; i++)
-		if (myApp.ig.currPosts[i].tags.includes(myApp.ig.currHashtag)) 
+		spots.ig.resetGallery();
+	}
+	var i = spots.ig.maxIndex;
+	if (spots.ig.currHashtag != "") 
+	{
+		for (i ; i < spots.ig.maxIndex+9; i++) // !!! check edge cases here and next block !!!
 		{
-			$(".ig-feed__gallery").append(`<div class="container">
-				<div class="container__image">
-				<img src="${myApp.ig.currPosts[i].image.url}" alt="Instagram Post" class="gallery-item" id="${myApp.ig.currPosts[i].id}" data-location="${myApp.ig.currPosts[i].location}">
-				</div>
-				</div>`);
-			if (!(myApp.ig.currPostsLocations.includes(myApp.ig.currPosts[i].location)))
+			if (i > spots.ig.currPosts.length) { break; } // cannot display more than the number of available posts
+			if (spots.ig.currPosts[i].tags.includes(spots.ig.currHashtag)) 
 			{
-				myApp.ig.currPostsLocations.push(myApp.ig.currPosts[i].location);
-				$(".filters").append(`<li><button class="location location--selected">${myApp.ig.currPosts[i].location}</button></li>`)
+				// console.log(i, breakpoint, spots.ig.maxIndex, spots.ig.currPosts);
+				spots.ig.appendPost(spots.ig.currPosts[i]);
 			}
 		}
+		spots.ig.maxIndex += i;
 	}
 	else 
 	{
-		for (var i = 0; i < myApp.ig.currPosts.length; i++) 
+		for (i; i < spots.ig.maxIndex+9; i++) 
 		{
-			$(".ig-feed__gallery").append(`<div class="container">
-				<div class="container__image">
-				<img src="${myApp.ig.currPosts[i].image.url}" alt="Instagram Post" class="gallery-item" id="${myApp.ig.currPosts[i].id}" data-location="${myApp.ig.currPosts[i].location}">
-				</div>
-				</div>`);
-			if (!(myApp.ig.currPostsLocations.includes(myApp.ig.currPosts[i].location)))
-			{
-				myApp.ig.currPostsLocations.push(myApp.ig.currPosts[i].location);
-				$(".filters").append(`<li><button class="location location--selected">${myApp.ig.currPosts[i].location}</button></li>`)
-			}
+			
+			if (i > spots.ig.currPosts.length) { break; } // cannot display more than the number of available posts
+			// console.log(i, spots.ig.breakpoint, spots.ig.maxIndex, spots.ig.currPosts);
+			spots.ig.appendPost(spots.ig.currPosts[i]);
 		}
+		spots.ig.maxIndex += i;
 	}
+	spots.ig.checkNoContent();
+}
+
+// checks if the ig gallery is empty
+spots.ig.checkNoContent = function() {
 	var targets = $(".gallery-item");
 	var count = 0;
 	for (var i = 0; i < targets.length; i++) 
@@ -254,7 +285,8 @@ myApp.ig.updateGallery = function() {
 	else { $(".no-content").css("visibility", "hidden"); }
 }
 
-myApp.google.stickyMap = function() {
+// stickies the google map
+spots.google.stickyMap = function() {
 	var headerHeight = $("nav").height();
 	var footerPosition = $("footer").offset().top;
 	$(window).scroll(function() 
@@ -276,7 +308,20 @@ myApp.google.stickyMap = function() {
 	});
 }
 
-myApp.ig.addFilterListener = function() {
+// append more posts on scroll
+spots.ig.addAppendOnScrollListener = function() {
+	$(window).scroll(function() {
+		if ($(window).scrollTop()+$(window).height() > $(document).height()-5) {
+			if (spots.ig.currPosts.length > 0 || spots.ig.maxIndex < spots.ig.currPosts.length)
+			{
+				spots.ig.updateGallery();
+			}
+		}
+	});
+}
+
+// hide and unhide the filters
+spots.ig.addFilterStateToggleListener = function() {
 	$(".filters-toggle").on("click touchstart", function(event) 
 	{
 		event.preventDefault();
@@ -292,13 +337,14 @@ myApp.ig.addFilterListener = function() {
 	});
 }
 
-myApp.ig.addHashtagListener = function() {
+// 
+spots.ig.addHashtagSubmitListener = function() {
 	$(".hashtag-search__submit").on("click touchstart", function(event) 
 	{
 		event.preventDefault();
-		myApp.ig.currHashtag = $(".hashtag-search__field").val();
+		spots.ig.currHashtag = $(".hashtag-search__field").val();
 
-		if (myApp.ig.currHashtag.replace(/\s/g, '') == "") 
+		if (spots.ig.currHashtag.replace(/\s/g, '') == "") 
 		{
 			alert("Invalid hashtag.");
 		}
@@ -306,8 +352,8 @@ myApp.ig.addHashtagListener = function() {
 		{
 			$(".hashtag-search__field").val("");
 			$(".hashtag-search__curr").html(`<button><i class="fa fa-times" aria-hidden="true"></i></button>
-				<span>#${myApp.ig.currHashtag}</span>`);
-			myApp.ig.updateGallery();
+				<span>#${spots.ig.currHashtag}</span>`);
+			spots.ig.updateGallery();
 		}
 	});
 
@@ -315,12 +361,12 @@ myApp.ig.addHashtagListener = function() {
 	{
 		event.preventDefault();
 		$(".hashtag-search__curr").html("N/A");
-		myApp.ig.currHashtag = "";
-		myApp.ig.updateGallery();
+		spots.ig.currHashtag = "";
+		spots.ig.updateGallery();
 	});
 }
 
-myApp.ig.addLocationListener = function() {
+spots.ig.addLocationStateToggleListener = function() {
 	$(".filters").on("click touchstart", ".location", function(event) 
 	{
 		event.preventDefault();
@@ -363,5 +409,5 @@ myApp.ig.addLocationListener = function() {
 }
 
 $(function() {
-	myApp.init();
+	spots.init();
 });

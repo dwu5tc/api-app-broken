@@ -1,5 +1,5 @@
 .map-view {
-	width: 50%;
+	width: 35%;
 	position: fixed;
 	top: 90px;
 	display: flex;
@@ -7,10 +7,12 @@
 	&__search-bar {
 	z-index: 10;
 		&__search {
-
 		}
 	}
 	&__search-box {
+		background: url("../../imgs/search_grey.svg") no-repeat;
+		background-size: 16px;
+		background-position: 3% 50%;
 		position: absolute;
 		z-index: 10;
 		width: 100%;
@@ -19,7 +21,7 @@
 		font-family: 'Montserrat', sans-serif;
 		font-size: 14px;
 		color: #333;
-		padding-left: 15px;
+		padding-left: 40px;
 		margin-top: 10px;
 		margin-left: 15px;
 		width: calc(100% - 30px);
@@ -29,12 +31,9 @@
 		width: 100%;
 		position: relative;
 		top: initial;
+		max-height: 65vh;
 	}
 }
-
-// .map-view * {
-// 	overflow: hidden;
-// }
 
 .map-container {
 	display: flex;
